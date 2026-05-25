@@ -52,7 +52,7 @@ $my_events = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </nav>
 
 <div class="container mt-5">
-    [cite_start]<h2>My Registered Events [cite: 16]</h2>
+    <h2>My Registered Events</h2>
     <hr>
 
     <div class="row">

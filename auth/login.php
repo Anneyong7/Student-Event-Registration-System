@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../auth/db.php';
+require_once 'db.php';
 
 $error = '';
 
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <div class="container mt-5" style="max-width: 400px;">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white text-center">
-            <h4 class="mb-0">System Login</h4>
+            <h4 class="mb-0">Login</h4>
         </div>
         <div class="card-body">
             
