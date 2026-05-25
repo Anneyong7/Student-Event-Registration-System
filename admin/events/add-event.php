@@ -1,5 +1,5 @@
 <?php
-../../auth/db.php';
+require_once ' ../../auth/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $title = $_POST['title'];
