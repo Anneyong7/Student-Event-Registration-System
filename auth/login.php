@@ -5,28 +5,23 @@ require_once 'db.php';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Get the username and password from the form
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
 
-    // Check if fields are empty
     if (empty($username) || empty($password)) {
         $error = "Please enter both username and password.";
     } else {
-        // Search the database for the username
         $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
         $stmt->execute([$username]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $user = $stmt->fetch();
 
-        // Verify the user exists and the password matches
         if ($user && password_verify($password, $user['password'])) {
-            // Set session variables
             $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role'];
 
-            // Redirect based on role
             if ($user['role'] === 'admin') {
-                header("Location: ../admin/events/events.php");
+                header("Location: ../admin/events.php");
             } else {
                 header("Location: ../student/dashboard.php");
             }
@@ -36,50 +31,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 }
+
+$pageTitle = "Login";
+include '../includes/header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Event System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-
-<div class="container mt-5" style="max-width: 400px;">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white text-center">
-            <h4 class="mb-0">Login</h4>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="card shadow-sm w-100" style="max-width: 400px;">
+        <div class="card-header bg-primary text-white text-center py-3">
+            <h4 class="mb-0">System Login</h4>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
             
             <?php if (!empty($error)): ?>
                 <div class="alert alert-danger"><?php echo $error; ?></div>
             <?php endif; ?>
 
-            <form method="POST" action="login.php">
+            <form id="loginForm" method="POST" action="login.php" novalidate>
                 <div class="mb-3">
                     <label class="form-label">Username</label>
                     <input type="text" name="username" class="form-control" required>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
                     <label class="form-label">Password</label>
                     <input type="password" name="password" class="form-control" required>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">Login</button>
+                <button type="submit" class="btn btn-primary w-100 py-2">Login</button>
             </form>
 
             <div class="mt-3 text-center">
-                <p>Don't have an account? <a href="register.php">Register here</a>.</p>
+                <p class="mb-0 text-muted">Don't have an account? <a href="register.php" class="fw-bold">Register here</a>.</p>
             </div>
             
         </div>
     </div>
 </div>
 
-</body>
-</html>
+<?php include '../includes/footer.php'; ?>

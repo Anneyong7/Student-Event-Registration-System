@@ -2,7 +2,6 @@
 session_start();
 require_once '../auth/db.php';
 
-// Check if the user is logged in and is a student
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
     header("Location: ../auth/login.php");
     exit();
@@ -10,7 +9,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
 
 $user_id = $_SESSION['user_id'];
 
-// Fetch ONLY the events this specific student registered for
 $sql = "SELECT events.*, registrations.registered_at 
         FROM events 
         JOIN registrations ON events.id = registrations.event_id 
@@ -19,55 +17,34 @@ $sql = "SELECT events.*, registrations.registered_at
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$user_id]);
-$my_events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$my_events = $stmt->fetchAll();
+
+$pageTitle = "My Registered Events";
+$rootPath = '../';
+include '../includes/header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Events - Student Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-        <a class="navbar-brand" href="dashboard.php">Student Portal</a>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="dashboard.php">All Events</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="my-events.php">My Registered Events</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-danger" href="../auth/logout.php">Logout</a>
-                </li>
-            </ul>
-        </div>
+<div class="container">
+    <div class="page-heading">
+        <h2>My Registered Events</h2>
+        <p>Review the university events you have committed to attend</p>
     </div>
-</nav>
-
-<div class="container mt-5">
-    <h2>My Registered Events</h2>
-    <hr>
 
     <div class="row">
         <?php if (count($my_events) > 0): ?>
             <?php foreach ($my_events as $event): ?>
                 <div class="col-md-4 mb-4">
-                    <div class="card shadow-sm border-success">
+                    <div class="card h-100 shadow-sm border-start border-4 border-success">
                         <div class="card-body">
-                            <h5 class="card-title text-success"><?php echo htmlspecialchars($event['title']); ?></h5>
+                            <h5 class="card-title fw-bold text-success"><?php echo htmlspecialchars($event['title']); ?></h5>
                             <h6 class="card-subtitle mb-2 text-muted">
-                                Date: <?php echo htmlspecialchars($event['event_date']); ?>
+                                📅 Event Date: <?php echo date('M d, Y', strtotime($event['event_date'])); ?>
                             </h6>
-                            <p class="card-text"><?php echo htmlspecialchars($event['description']); ?></p>
-                            <div class="alert alert-success p-2 mb-0 text-center">
-                                <small>Registered on: <?php echo htmlspecialchars($event['registered_at']); ?></small>
+                            <p class="card-text text-secondary"><?php echo htmlspecialchars($event['description']); ?></p>
+                        </div>
+                        <div class="card-footer bg-white border-0 pt-0">
+                            <div class="alert alert-success p-2 mb-2 text-center small">
+                                Registered on: <?php echo date('M d, Y h:i A', strtotime($event['registered_at'])); ?>
                             </div>
                         </div>
                     </div>
@@ -75,13 +52,12 @@ $my_events = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php endforeach; ?>
         <?php else: ?>
             <div class="col-12">
-                <div class="alert alert-warning">
-                    You have not registered for any events yet. <a href="dashboard.php">Browse events here</a>.
+                <div class="alert alert-warning text-center py-4">
+                    You have not registered for any events yet. <a href="dashboard.php" class="alert-link fw-bold">Browse events here</a>.
                 </div>
             </div>
         <?php endif; ?>
     </div>
 </div>
 
-</body>
-</html>
+<?php include '../includes/footer.php'; ?>
