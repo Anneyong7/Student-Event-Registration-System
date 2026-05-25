@@ -1,5 +1,5 @@
 <?php
-include 'db.php';
+../../auth/db.php';
 
 if (isset($_GET['delete_id'])) {
     $delete_id = intval($_GET['delete_id']);
