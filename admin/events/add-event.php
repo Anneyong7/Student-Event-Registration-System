@@ -1,20 +1,27 @@
 <?php
-require_once ' ../../auth/db.php';
+session_start();
+require_once '../../includes/db.php';
+
+// Ensure only admins can access this page
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../../auth/login.php");
+    exit();
+}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $title = $_POST['title'];
-    $date = $_POST['date'];
+    $event_date = $_POST['date']; // Form uses 'date', save to 'event_date'
     $description = $_POST['description'];
     $slots = intval($_POST['slots']);
 
-    $stmt = $conn->prepare("INSERT INTO events (title, date, description, slots) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("sssi", $title, $date, $description, $slots);
+    // PDO method to insert data safely
+    $stmt = $pdo->prepare("INSERT INTO events (title, event_date, description, slots) VALUES (?, ?, ?, ?)");
 
-    if ($stmt->execute()) {
+    if ($stmt->execute([$title, $event_date, $description, $slots])) {
         header("Location: events.php?msg=Event created successfully!");
         exit();
     } else {
-        $error = "Error creating event: " . $conn->error;
+        $error = "Error creating event.";
     }
 }
 ?>
