@@ -1,15 +1,23 @@
 <?php
-require_once ' ../../auth/db.php';
+session_start();
+require_once '../../auth/db.php';
 
+// Ensure only admins can access this page
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../../auth/login.php");
+    exit();
+}
+
+// Fetch the event data
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
-    $stmt = $conn->prepare("SELECT * FROM events WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
     
-    if ($result->num_rows === 1) {
-        $event = $result->fetch_assoc();
+    // PDO method
+    $stmt = $pdo->prepare("SELECT * FROM events WHERE id = ?");
+    $stmt->execute([$id]);
+    
+    if ($stmt->rowCount() === 1) {
+        $event = $stmt->fetch(PDO::FETCH_ASSOC);
     } else {
         header("Location: events.php?msg=Event not found");
         exit();
@@ -19,16 +27,17 @@ if (isset($_GET['id'])) {
     exit();
 }
 
+// Handle the update submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $title = $_POST['title'];
-    $date = $_POST['date'];
+    $event_date = $_POST['date']; // The HTML form uses name="date"
     $description = $_POST['description'];
     $slots = intval($_POST['slots']);
 
-    $update_stmt = $conn->prepare("UPDATE events SET title = ?, date = ?, description = ?, slots = ? WHERE id = ?");
-    $update_stmt->bind_param("sssii", $title, $date, $description, $slots, $id);
-
-    if ($update_stmt->execute()) {
+    // PDO method with correct column name: event_date
+    $update_stmt = $pdo->prepare("UPDATE events SET title = ?, event_date = ?, description = ?, slots = ? WHERE id = ?");
+    
+    if ($update_stmt->execute([$title, $event_date, $description, $slots, $id])) {
         header("Location: events.php?msg=Event updated successfully!");
         exit();
     } else {
@@ -62,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Event Date</label>
-                    <input type="date" name="date" class="form-control" value="<?php echo $event['date']; ?>" required>
+                    <input type="date" name="date" class="form-control" value="<?php echo htmlspecialchars($event['event_date']); ?>" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Description</label>
@@ -70,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Available Slots</label>
-                    <input type="number" name="slots" class="form-control" min="0" value="<?php echo $event['slots']; ?>" required>
+                    <input type="number" name="slots" class="form-control" min="0" value="<?php echo htmlspecialchars($event['slots']); ?>" required>
                 </div>
                 <div class="d-flex justify-content-between">
                     <a href="events.php" class="btn btn-secondary">Cancel</a>
