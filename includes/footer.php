@@ -1,15 +1,4 @@
-<?php
-/**
- * includes/footer.php
- * Shared page footer. Include at the BOTTOM of every PHP page.
- *
- * USAGE:
- *   include '../includes/footer.php';
- *   (use '../../includes/footer.php' for pages 2 levels deep)
- */
-?>
-
-</main><!-- /.edu-main -->
+</main>
 
 <footer class="edu-footer">
   <div class="container">
@@ -26,13 +15,9 @@
   </div>
 </footer>
 
-<!-- Bootstrap 5.3 JS Bundle -->
-<script
-  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
-</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Custom JS -->
-<script src="<?php echo $rootPath ?? '../'; ?>assets/js/main.js"></script>
+<script src="<?php echo $rootPath ?? '../'; ?>assets/main.js"></script>
 
 </body>
 </html>
