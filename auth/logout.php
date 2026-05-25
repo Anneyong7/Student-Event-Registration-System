@@ -1,14 +1,14 @@
 <?php
-// Start the session so the server knows which user to log out
+// Start the session to access the current user
 session_start();
 
 // Remove all session variables
-$_SESSION = array();
+session_unset();
 
-// Destroy the entire session
+// Destroy the session completely
 session_destroy();
 
-// Redirect the user back to the login page
+// Redirect back to the login page
 header("Location: login.php");
 exit();
 ?>
