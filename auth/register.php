@@ -1,7 +1,7 @@
 <?php
 session_start();
 // This links the external database file
-require_once '../includes/db.php';
+require_once '../auth/db.php';
 
 $error = '';
 $success = '';
