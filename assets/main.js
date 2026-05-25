@@ -1,31 +1,17 @@
-/**
- * EduEvents — main.js
- * Role 5: UI/UX & Architecture
- * File: assets/js/main.js
- *
- * What this covers:
- *  1. Login form validation   (matches auth/login.php fields: email, password)
- *  2. Register form validation (matches auth/register.php fields: username, password, confirm_password)
- *  3. Add/Edit event form validation (matches admin/events fields: title, date, description, slots)
- *  4. Delete confirmation for any element with data-confirm attribute
- *  5. Auto-dismiss alerts with class "alert-autohide"
- */
-
 document.addEventListener('DOMContentLoaded', function () {
 
-  // ── 1. LOGIN FORM ─────────────────────────────────────────
-  // auth/login.php uses: name="email", name="password"
+  // ── 1. LOGIN FORM VALIDATION ──────────────────────────────
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
     loginForm.addEventListener('submit', function (e) {
       let valid = true;
 
-      const email = document.querySelector('[name="email"]');
-      if (email && !isValidEmail(email.value.trim())) {
-        showError(email, 'Please enter a valid email address.');
+      const username = document.querySelector('[name="username"]');
+      if (username && username.value.trim() === '') {
+        showError(username, 'Username field cannot be left blank.');
         valid = false;
-      } else if (email) {
-        clearError(email);
+      } else if (username) {
+        clearError(username);
       }
 
       const password = document.querySelector('[name="password"]');
@@ -40,8 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ── 2. REGISTER FORM ──────────────────────────────────────
-  // auth/register.php uses: name="username", name="password", name="confirm_password"
+  // ── 2. REGISTER FORM VALIDATION ───────────────────────────
   const registerForm = document.getElementById('registerForm');
   if (registerForm) {
     registerForm.addEventListener('submit', function (e) {
@@ -77,9 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ── 3. ADD / EDIT EVENT FORM ──────────────────────────────
-  // admin/events/add-event.php and edit-event.php use:
-  // name="title", name="date", name="description", name="slots"
+  // ── 3. ADD / EDIT EVENT FORM VALIDATION ───────────────────
   const eventForm = document.getElementById('eventForm');
   if (eventForm) {
     eventForm.addEventListener('submit', function (e) {
@@ -105,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const description = document.querySelector('[name="description"]');
       if (description && description.value.trim().length < 5) {
-        showError(description, 'Please provide a description.');
+        showError(description, 'Please provide a clear description.');
         valid = false;
       } else if (description) {
         clearError(description);
@@ -126,35 +109,31 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ── 4. DELETE CONFIRMATION ────────────────────────────────
-  // Add  data-confirm="Your message here"  to any delete link or button.
-  // admin/events/events.php already has its own confirmDelete() function,
-  // but this handles any other elements using data-confirm as well.
+  // ── 4. GLOBAL DELETE CONFIRMATIONS ────────────────────────
   document.querySelectorAll('[data-confirm]').forEach(function (el) {
     el.addEventListener('click', function (e) {
-      const msg = el.getAttribute('data-confirm') || 'Are you sure you want to delete this?';
+      const msg = el.getAttribute('data-confirm') || 'Are you sure you want to proceed?';
       if (!confirm(msg)) {
         e.preventDefault();
       }
     });
   });
 
-  // ── 5. AUTO-DISMISS ALERTS ────────────────────────────────
-  // Add class  alert-autohide  to any Bootstrap alert to make it
-  // disappear automatically after 4 seconds.
-  document.querySelectorAll('.alert-autohide').forEach(function (alertEl) {
+  // ── 5. AUTO-DISMISS INTERFACES ───────────────────────────
+  document.querySelectorAll('.alert-dismissible').forEach(function (alertEl) {
     setTimeout(function () {
-      const bsAlert = bootstrap.Alert.getOrCreateInstance(alertEl);
-      if (bsAlert) bsAlert.close();
+      if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
+        const bsAlert = bootstrap.Alert.getOrCreateInstance(alertEl);
+        if (bsAlert) bsAlert.close();
+      }
     }, 4000);
   });
 
-  // ── HELPER FUNCTIONS ──────────────────────────────────────
+  // ── HELPERS ───────────────────────────────────────────────
   function showError(input, message) {
     input.classList.remove('is-valid');
     input.classList.add('is-invalid');
 
-    // Find or create the feedback div right after the input
     let feedback = input.parentElement.querySelector('.invalid-feedback');
     if (!feedback) {
       feedback = document.createElement('div');
@@ -168,9 +147,4 @@ document.addEventListener('DOMContentLoaded', function () {
     input.classList.remove('is-invalid');
     input.classList.add('is-valid');
   }
-
-  function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
 });
