@@ -1,5 +1,5 @@
 <?php
-../../auth/db.php';
+require_once ' ../../auth/db.php';
 
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
