@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../auth/db.php';
+require_once '../../auth/db.php';
 
 // Ensure only admins can access this page
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
