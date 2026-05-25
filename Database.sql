@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 25, 2026 at 03:58 PM
+-- Generation Time: May 25, 2026 at 06:47 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -35,6 +35,14 @@ CREATE TABLE `events` (
   `slots` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `events`
+--
+
+INSERT INTO `events` (`id`, `title`, `description`, `event_date`, `slots`) VALUES
+(1, 'debug malala', '123123213123213', '2026-05-08', 1),
+(2, 'concert ni kurt', 'sama kayo concert ni kurt', '2026-05-27', 0);
+
 -- --------------------------------------------------------
 
 --
@@ -47,6 +55,14 @@ CREATE TABLE `registrations` (
   `event_id` int(11) NOT NULL,
   `registered_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `registrations`
+--
+
+INSERT INTO `registrations` (`id`, `user_id`, `event_id`, `registered_at`) VALUES
+(1, 4, 1, '2026-05-25 16:25:12'),
+(2, 4, 2, '2026-05-25 16:30:55');
 
 -- --------------------------------------------------------
 
@@ -67,7 +83,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`) VALUES
-(1, 'admin', 'admin@school.edu', '$2y$10$7rKVmC0VsmZ/B0B6LpXf8.m1zC0zR7z0vD1W8.V6Z4Yv4b4f4f4f4', 'admin');
+(3, 'admin', 'admin@.edu.co', '$2y$10$ppCkkv/msY34EMg7uLnpQeFkdHmWlvG3Nln.E.jAisMAFKWA9F95y', 'admin'),
+(4, 'anneyong', '424004994@ntc.edu.ph', '$2y$10$mpUQNEPldUPB.QvPFeot4.JjWLi7X177dJMdgZS7kVluEGVojqybC', 'student');
 
 --
 -- Indexes for dumped tables
@@ -103,19 +120,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `events`
 --
 ALTER TABLE `events`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `registrations`
 --
 ALTER TABLE `registrations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
