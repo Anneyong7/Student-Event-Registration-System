@@ -1,21 +1,31 @@
 <?php
-require_once ' ../../auth/db.php';
+session_start();
+require_once '../../includes/db.php';
 
+// Ensure only admins can access this page
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../../auth/login.php");
+    exit();
+}
+
+// Handle Delete Request
 if (isset($_GET['delete_id'])) {
     $delete_id = intval($_GET['delete_id']);
-    $stmt = $conn->prepare("DELETE FROM events WHERE id = ?");
-    $stmt->bind_param("i", $delete_id);
     
-    if ($stmt->execute()) {
+    // PDO method for delete
+    $stmt = $pdo->prepare("DELETE FROM events WHERE id = ?");
+    if ($stmt->execute([$delete_id])) {
         header("Location: events.php?msg=Event deleted successfully");
         exit();
     } else {
-        echo "Error: " . $conn->error;
+        $error_msg = "Error deleting event.";
     }
 }
 
-$query = "SELECT * FROM events ORDER BY date ASC";
-$result = $conn->query($query);
+// PDO method to fetch all events
+$query = "SELECT * FROM events ORDER BY event_date ASC";
+$stmt = $pdo->query($query);
+$events = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -39,6 +49,13 @@ $result = $conn->query($query);
         </div>
     <?php endif; ?>
 
+    <?php if (isset($error_msg)): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <?php echo htmlspecialchars($error_msg); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+
     <div class="card shadow-sm">
         <div class="card-body p-0">
             <table class="table table-striped table-hover align-middle mb-0">
@@ -53,12 +70,12 @@ $result = $conn->query($query);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if ($result && $result->num_rows > 0): ?>
-                        <?php while($row = $result->fetch_assoc()): ?>
+                    <?php if (count($events) > 0): ?>
+                        <?php foreach ($events as $row): ?>
                             <tr>
                                 <td><?php echo $row['id']; ?></td>
                                 <td><strong><?php echo htmlspecialchars($row['title']); ?></strong></td>
-                                <td><?php echo date('M d, Y', strtotime($row['date'])); ?></td>
+                                <td><?php echo date('M d, Y', strtotime($row['event_date'])); ?></td>
                                 <td><?php echo htmlspecialchars(substr($row['description'], 0, 60)) . (strlen($row['description']) > 60 ? '...' : ''); ?></td>
                                 <td><span class="badge bg-secondary"><?php echo $row['slots']; ?></span></td>
                                 <td>
@@ -66,7 +83,7 @@ $result = $conn->query($query);
                                     <a href="events.php?delete_id=<?php echo $row['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirmDelete('<?php echo htmlspecialchars($row['title'], ENT_QUOTES); ?>')">Delete</a>
                                 </td>
                             </tr>
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
                             <td colspan="6" class="text-center text-muted py-4">No events found. Click "+ Add New Event" to get started.</td>
