@@ -1,9 +1,9 @@
 <?php
 session_start();
-require_once '../auth/db.php';
+require_once '../../auth/db.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../auth/login.php");
+    header("Location: ../../auth/login.php");
     exit();
 }
 
@@ -29,8 +29,8 @@ if ($event_id > 0) {
 $registrants = $stmt->fetchAll();
 
 $pageTitle = "Registrant Viewer";
-$rootPath = '../';
-include '../includes/header.php';
+$rootPath = '../../';
+include '../../includes/header.php';
 ?>
 
 <div class="container">
@@ -89,4 +89,4 @@ include '../includes/header.php';
     </div>
 </div>
 
-<?php include '../includes/footer.php'; ?>
+<?php include '../../includes/footer.php'; ?>
